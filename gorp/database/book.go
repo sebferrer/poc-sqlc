@@ -3,10 +3,10 @@ package database
 import (
 	"gopkg.in/gorp.v2"
 
-	"github.com/sebferrer/poc-sqlc/internal/models"
+	"github.com/sebferrer/poc-sqlc/gorp/models"
 )
 
-func InsertBook(dbMap *gorp.DbMap, book *models.Book) error {
+func CreateBook(dbMap *gorp.DbMap, book *models.Book) error {
 	return dbMap.Insert(book)
 }
 

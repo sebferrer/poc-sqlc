@@ -1,12 +1,12 @@
 package database
 
 import (
-	"github.com/sebferrer/poc-sqlc/internal/models"
+	"github.com/sebferrer/poc-sqlc/gorp/models"
 
 	"gopkg.in/gorp.v2"
 )
 
-func InsertAuthor(dbMap *gorp.DbMap, author *models.Author) error {
+func CreateAuthor(dbMap *gorp.DbMap, author *models.Author) error {
 	return dbMap.Insert(author)
 }
 

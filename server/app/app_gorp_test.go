@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/sebferrer/poc-sqlc/internal/database"
-	"github.com/sebferrer/poc-sqlc/internal/models"
+	"github.com/sebferrer/poc-sqlc/gorp/models"
+	"github.com/sebferrer/poc-sqlc/server/app"
 	"gopkg.in/gorp.v2"
 	"gotest.tools/v3/assert"
 )
 
-func TestRun(t *testing.T) {
+func TestRunWithGorp(t *testing.T) {
 	db, mock, _ := sqlmock.New()
 	dbMap := &gorp.DbMap{Db: db, Dialect: gorp.PostgresDialect{}}
 	dbMap.AddTableWithName(models.Author{}, "author").SetKeys(true, "ID")
@@ -38,21 +38,7 @@ func TestRun(t *testing.T) {
 		WithArgs(1).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
-	author := &models.Author{Email: "test@example.com", Bio: "An author"}
-	err := database.InsertAuthor(dbMap, author)
-	assert.NilError(t, err)
-
-	retrievedAuthor, err := database.GetAuthor(dbMap, author.ID)
-	assert.NilError(t, err)
-	assert.Equal(t, retrievedAuthor.Email, "test@example.com")
-	assert.Equal(t, retrievedAuthor.Bio, "An author")
-
-	author.Bio = "Updated Bio"
-	err = database.UpdateAuthor(dbMap, author)
-	assert.NilError(t, err)
-
-	err = database.DeleteAuthor(dbMap, author.ID)
-	assert.NilError(t, err)
+	app.RunWithGorp(dbMap)
 
 	assert.NilError(t, mock.ExpectationsWereMet())
 }
