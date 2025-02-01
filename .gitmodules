@@ -1,0 +1,3 @@
+[submodule "sqlc/database/migrations"]
+	path = sqlc/database/migrations
+	url = https://github.com/sebferrer/poc-sqlc-db
