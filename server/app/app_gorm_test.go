@@ -1,6 +1,7 @@
 package app_test
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -18,24 +19,24 @@ func TestRunWithGorm(t *testing.T) {
 	testAuthor := models.Author{ID: 1, Email: "test@example.com", Bio: "An author"}
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO "authors" \("email","bio"\) VALUES \(\$1,\$2\) RETURNING "id"`).
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "authors" ("email","bio") VALUES ($1,$2) RETURNING "id"`)).
 		WithArgs(testAuthor.Email, testAuthor.Bio).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(testAuthor.ID))
 	mock.ExpectCommit()
 
-	mock.ExpectQuery(`SELECT \* FROM "authors" WHERE "authors"."id" = \$1 ORDER BY "authors"."id" LIMIT \$[0-9]+`).
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors" WHERE "authors"."id" = $1 ORDER BY "authors"."id" LIMIT $2`)).
 		WithArgs(testAuthor.ID, 1).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "bio"}).
 			AddRow(testAuthor.ID, testAuthor.Email, testAuthor.Bio))
 
 	mock.ExpectBegin()
-	mock.ExpectExec(`UPDATE "authors" SET "email"=\$1,\s*"bio"=\$2 WHERE "id" = \$3`).
+	mock.ExpectExec(regexp.QuoteMeta(`UPDATE "authors" SET "email"=$1,"bio"=$2 WHERE "id" = $3`)).
 		WithArgs(testAuthor.Email, "Updated Bio", testAuthor.ID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	mock.ExpectBegin()
-	mock.ExpectExec(`DELETE FROM "authors" WHERE "authors"."id" = \$1`).
+	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "authors" WHERE "authors"."id" = $1`)).
 		WithArgs(testAuthor.ID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
