@@ -6,3 +6,7 @@ type Book struct {
 	PublicationDate string `gorm:"not null"`
 	AuthorID        int64  `gorm:"index"`
 }
+
+func (Book) TableName() string {
+	return "book"
+}

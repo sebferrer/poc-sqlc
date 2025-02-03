@@ -6,3 +6,7 @@ type Author struct {
 	Bio   string
 	Books []Book `gorm:"foreignKey:AuthorID;constraint:OnDelete:CASCADE"`
 }
+
+func (Author) TableName() string {
+	return "author"
+}
